@@ -1,0 +1,20 @@
+form {
+    font-size: 10px;
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    font-size: 10px;
+}
+
+*:focus {
+    box-shadow: none !important;
+}
+
+button.btn-sm {
+    font-size: 10px;
+    padding: .15rem .3rem;
+}
