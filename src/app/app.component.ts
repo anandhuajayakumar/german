@@ -130,12 +130,14 @@ export class AppComponent {
   }
 
   isValueLessThanZero(value) {
-    if (!isNaN(value)) {
+    if (!isNaN(value) && value != null) {
       if (Number(value) === value) {
         return Number(value) > 0;
       } else {
         return Number(value) >= 0;
       }
+    } else {
+      return false;
     }
   }
 }
