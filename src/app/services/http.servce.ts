@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Rx';
+import { throwError } from 'rxjs';
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/toPromise';
+import { catchError, timeout } from 'rxjs/operators';
+
 @Injectable({
     providedIn: 'root'
 })
-export class BackEndService {
+export class MyHttpService {
 
     accessToken: any;
 
@@ -16,36 +15,26 @@ export class BackEndService {
         private http: HttpClient,
     ) { }
 
-    public post(data: any, path) {
+    public post(path, data: any) {
         const body = JSON.stringify(data);
-        const httpHeaders = new HttpHeaders(this.addTokenToHeader());
-        return this.http.post(path, body, { headers: httpHeaders })
-            .map(this.extractData)
-            .catch(this.handleErrorObservable);
+        const httpHeaders = this.addTokenToHeader();
+        return this.http.post(path, body, httpHeaders)
+            .pipe(
+                timeout(600000),
+                catchError(error =>
+                    this.handleErrorObservable(error)
+                ));
     }
 
     public get(path, data = {}) {
-        // const httpHeaders = new HttpHeaders({
-        //     'Content-Type': 'application/json'
-        //     , 'Authorization': 'Token ' + this.cookiesService.getCookie('token')
-        // });
-        const httpHeaders = new HttpHeaders(this.addTokenToHeader());
-        return this.http.get(path, { params: data, headers: httpHeaders }).map(this.extractData)
-            .catch(this.handleErrorObservable);
-
-        // const httpHeaders = new HttpHeaders(this.addTokenToHeader(authorize));
-        // console.log(httpHeaders.get('Content-Type'));
-        // console.log(httpHeaders.get('Authorization'));
-        // return this.http.get(path, { params: data, headers: httpHeaders }).map(this.extractData)
-        //     .catch(this.handleErrorObservable);
-    }
-
-    private extractData(res: Response) {
-        const body = res;
-        if (body == null) {
-            return {};
-        }
-        return body;
+        const httpHeaders = this.addTokenToHeader();
+        return this.http.get(path, httpHeaders)
+            .pipe(
+                timeout(600000),
+                catchError(error =>
+                    // throwError(error)
+                    this.handleErrorObservable(error)
+                ));
     }
 
     private handleErrorObservable(error: Response | any) {
@@ -53,14 +42,13 @@ export class BackEndService {
             alert('Session expired!');
             window.location.assign('/');
         } else {
-            return Observable.throwError(error.message || error);
+            return throwError(error || 'Server error');
         }
-
     }
 
     private addTokenToHeader() {
         const header = { 'Content-Type': 'application/json' };
-        return header;
+        return { headers: new HttpHeaders(header) };
     }
 
 }

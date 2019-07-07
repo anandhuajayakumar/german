@@ -1,72 +1,77 @@
-<div class="container">
-  <div class="col-sm-10 d-flex justify-content-center">
+<div class="col-sm-12 px-5 pt-2">
+  <div class="d-flex justify-content-center">
     <form class="d-flex flex-wrap justify-content-around">
       <div class="form-group col-sm-5">
         <label for="age">Age</label>
-        <input type="number" [(ngModel)]="user.age" name="age" class="form-control" id="age" placeholder="Enter age" min="1" max="100">
+        <input type="number" [(ngModel)]="user.age" name="age" class="form-control" id="age" placeholder="Enter age"
+          min="1" max="100">
       </div>
-      <div class="form-group col-sm-5">
+      <!-- <div class="form-group col-sm-5">
         <label for="sex">Sex</label>
         <select class="form-control" [(ngModel)]="user.sex" name="sex" id="sex">
-        <option value="null">Enter sex</option>
-        <option *ngFor="let gender of genders" [value]="gender">{{gender}}</option>
-    </select>
-      </div>
-      <div class="form-group col-sm-5">
+          <option value="null">Enter sex</option>
+          <option *ngFor="let gender of genders; let i = index" [value]="i">{{gender}}</option>
+        </select>
+      </div> -->
+      <!-- <div class="form-group col-sm-5">
         <label for="job">Job</label>
         <select class="form-control" [(ngModel)]="user.job" name="job" id="job">
-        <option value="null">Enter Job</option>
-        <option *ngFor="let job of jobs" [value]="job">{{job}}</option>
-    </select>
-      </div>
-      <div class="form-group col-sm-5">
+          <option value="null">Enter Job</option>
+          <option *ngFor="let job of jobs; let i = index" [value]="i">{{job}}</option>
+        </select>
+      </div> -->
+      <!-- <div class="form-group col-sm-5">
         <label for="housing">Housing</label>
         <select class="form-control" [(ngModel)]="user.housing" name="housing" id="housing">
-        <option value="null">Enter housing</option>
-        <option *ngFor="let housing of housings" [value]="housing">{{housing}}</option>
-    </select>
-      </div>
+          <option value="null">Enter housing</option>
+          <option *ngFor="let housing of housings; let i = index" [value]="i">{{housing}}</option>
+        </select>
+      </div> -->
       <div class="form-group col-sm-5">
         <label for="savingAccount">Saving account</label>
         <select class="form-control" [(ngModel)]="user.savingAccount" name="savingAccount" id="savingAccount">
-        <option value="null">Enter saving account</option>
-        <option *ngFor="let savingAccount of accountTypes" [value]="savingAccount">{{savingAccount}}</option>
-    </select>
+          <option value="null">Enter saving account</option>
+          <option *ngFor="let savingAccount of accountTypes; let i = index" [value]="i">{{savingAccount}}</option>
+        </select>
       </div>
       <div class="form-group col-sm-5">
         <label for="checkingAccount">Checking account</label>
         <select class="form-control" [(ngModel)]="user.checkingAccount" name="checkingAccount" id="checkingAccount">
-        <option value="null">Enter checking account</option>
-        <option *ngFor="let checkingAccount of accountTypes" [value]="checkingAccount">{{checkingAccount}}</option>
-    </select>
+          <option value="null">Enter checking account</option>
+          <option *ngFor="let checkingAccount of accountTypes; let i = index" [value]="i">{{checkingAccount}}</option>
+        </select>
       </div>
       <div class="form-group col-sm-5">
         <label for="creditAmount">Credit Amount</label>
-        <input type="number" [(ngModel)]="user.creditAmount" name="creditAmount" class="form-control" id="creditAmount" placeholder="Enter credit amount"
-          min="0">
+        <input type="number" [(ngModel)]="user.creditAmount" name="creditAmount" class="form-control" id="creditAmount"
+          placeholder="Enter credit amount" min="0">
       </div>
       <div class="form-group col-sm-5">
         <label for="duration">Duration</label>
-        <input type="number" [(ngModel)]="user.duration" name="duration" class="form-control" id="duration" placeholder="Enter duration"
-          min="0">
+        <input type="number" [(ngModel)]="user.duration" name="duration" class="form-control" id="duration"
+          placeholder="Enter duration" min="0">
       </div>
       <div class="form-group col-sm-5">
         <label for="purpose">Purpose</label>
         <select class="form-control" [(ngModel)]="user.purpose" name="purpose" id="purpose">
-        <option value="null">Enter purpose</option>
-        <option *ngFor="let purpose of purposes" [value]="purpose">{{purpose}}</option>
-    </select>
+          <option value="null">Enter purpose</option>
+          <option *ngFor="let purpose of purposes; let i = index" [value]="i">{{purpose}}</option>
+        </select>
       </div>
-      <div class="form-group col-sm-5">
+      <!-- <div class="form-group col-sm-5">
         <label for="risk">Risk</label>
         <select class="form-control" [(ngModel)]="user.risk" name="risk" id="risk">
-        <option value="null">Enter risk</option>
-        <option *ngFor="let risk of risks" [value]="risk">{{risk}}</option>
-    </select>
-      </div>
-      <div class="col-sm-12">
-        <button class="btn btn-sm btn-primary float-right" [disabled]="!isFormValid()" (click)="submit()">Submit</button>
+          <option value="null">Enter risk</option>
+          <option *ngFor="let risk of risks; let i = index" [value]="i">{{risk}}</option>
+        </select>
+      </div> -->
+      <div class="col-sm-11">
+        <button [ngClass]="{'cursor-p': isFormValid(), 'cursor-d': !isFormValid()}"
+          class="btn btn-sm btn-primary float-right" [disabled]="!isFormValid()" (click)="submit()">Submit</button>
       </div>
     </form>
   </div>
+</div>
+<div class="col-sm-12 d-flex justify-content-center" *ngIf="data[0].x.length">
+  <plotly-plot  [data]="data" [layout]="graph.layout"></plotly-plot>
 </div>

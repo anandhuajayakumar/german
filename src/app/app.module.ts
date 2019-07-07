@@ -5,6 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 
+import { PlotlyModule } from 'angular-plotly.js';
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+PlotlyModule.plotlyjs = PlotlyJS;
+
+
 @NgModule({
   declarations: [
     AppComponent
@@ -13,7 +18,8 @@ import { AppComponent } from './app.component';
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PlotlyModule
   ],
   providers: [],
   bootstrap: [AppComponent]

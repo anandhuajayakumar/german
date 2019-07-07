@@ -1,5 +1,5 @@
 form {
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .form-group {
@@ -7,7 +7,7 @@ form {
 }
 
 .form-control {
-    font-size: 10px;
+    font-size: 14px;
 }
 
 *:focus {
@@ -15,6 +15,14 @@ form {
 }
 
 button.btn-sm {
-    font-size: 10px;
+    font-size: 14px;
     padding: .15rem .3rem;
+}
+
+.cursor-p {
+    cursor: pointer;
+}
+
+.cursor-d {
+    cursor: not-allowed;
 }

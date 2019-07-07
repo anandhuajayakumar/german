@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 import { FormModel } from './models/form.model';
+import { MyHttpService } from './services/http.servce';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ import { FormModel } from './models/form.model';
 export class AppComponent {
 
   constructor(
-    private http: HttpClient
+    private http: MyHttpService
   ) { }
 
   user = new FormModel();
@@ -57,20 +57,85 @@ export class AppComponent {
     3
   ];
 
+  graph = {
+    layout: {
+      width: 640,
+      height: 640,
+      xaxis: {
+        linecolor: 'black',
+        linewidth: 1,
+        mirror: true,
+        title: 'False Positive Rate',
+        range: [0, 1],
+      },
+      yaxis: {
+        linecolor: 'black',
+        linewidth: 1,
+        mirror: true,
+        title: 'True Positive Rate',
+        range: [0, 1],
+      },
+      title: 'Receiver Operating Characteristic'
+    }
+  };
+
+  data = [{
+    x: [],
+    y: [],
+    type: 'scatter',
+    mode: 'points',
+    marker: { color: 'red' },
+  },
+  {
+    x: [0, 1],
+    y: [0, 1],
+    mode: 'lines',
+    line: {
+      dash: 'dot',
+      width: 2
+    },
+    marker: { color: 'red' },
+  }];
+
+
   submit() {
-    console.log(this.user);
-    this.http.post('', this.user, )
-      .subscribe();
+    this.data[0] = {
+      x: [],
+      y: [],
+      type: 'scatter',
+      mode: 'points',
+      marker: { color: 'blue' }
+    };
+    Object.keys(this.user).forEach(
+      key => {
+        if (isNaN(this.user[key])) {
+          this.user[key] = Math.floor(Math.random() * Math.floor(3));
+        }
+      }
+    );
+    this.http.post('http://localhost:5000/getChartValues', this.user)
+      .subscribe(
+        response => {
+          this.data[0].x = response['fpr'];
+          this.data[0].y = response['tpr'];
+        }, error => {
+          console.error(error);
+        }
+      );
   }
 
   isFormValid() {
-    return this.isValueLessThanZero(this.user.age) &&
-      this.isValueLessThanZero(this.user.job) &&
-      this.isValueLessThanZero(this.user.creditAmount)&&
-      this.isValueLessThanZero(this.user.duration);
+    const valid = Object.values(this.user).map(this.isValueLessThanZero);
+    return valid.filter(x => x).length === valid.length;
   }
 
   isValueLessThanZero(value) {
-    return value == null || value < 0;
+    if (!isNaN(value)) {
+      if (Number(value) === value) {
+        return Number(value) > 0;
+      } else {
+        return Number(value) >= 0;
+      }
+    }
   }
 }
