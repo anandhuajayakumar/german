@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { FormModel } from './models/form.model';
 import { MyHttpService } from './services/http.servce';
@@ -8,7 +8,12 @@ import { MyHttpService } from './services/http.servce';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  eligibilityStatus = null;
+  accuracy = null;
+  rocAuc = null;
+  showResult = false;
 
   constructor(
     private http: MyHttpService
@@ -59,8 +64,8 @@ export class AppComponent {
 
   graph = {
     layout: {
-      width: 640,
-      height: 640,
+      width: 500,
+      height: 500,
       xaxis: {
         linecolor: 'black',
         linewidth: 1,
@@ -85,6 +90,7 @@ export class AppComponent {
     type: 'scatter',
     mode: 'points',
     marker: { color: 'red' },
+    name: ''
   },
   {
     x: [0, 1],
@@ -97,14 +103,20 @@ export class AppComponent {
     marker: { color: 'red' },
   }];
 
+  ngOnInit() {
+    this.getInitalChart();
+  }
 
-  submit() {
+  getInitalChart() {
+
+    this.showResult = false;
     this.data[0] = {
       x: [],
       y: [],
       type: 'scatter',
       mode: 'points',
-      marker: { color: 'blue' }
+      marker: { color: 'blue' },
+      name: ''
     };
     Object.keys(this.user).forEach(
       key => {
@@ -113,11 +125,50 @@ export class AppComponent {
         }
       }
     );
-    this.http.post('http://localhost:5000/getChartValues', this.user)
+    this.http.post('http://localhost:5000/getInitialChartValues', this.user)
       .subscribe(
         response => {
           this.data[0].x = response['fpr'];
           this.data[0].y = response['tpr'];
+          this.data[0].name = 'AUC = ' + Number(response['roc_auc']).toFixed(2);
+          this.accuracy = Number(response['accuracy']).toFixed(2);
+          this.rocAuc = Number(response['roc_auc']).toFixed(2);
+          this.showResult = true;
+        }, error => {
+          console.error(error);
+        }
+      );
+
+  }
+
+  submit() {
+
+    this.showResult = false;
+    this.data[0] = {
+      x: [],
+      y: [],
+      type: 'scatter',
+      mode: 'points',
+      marker: { color: 'blue' },
+      name: ''
+    };
+    Object.keys(this.user).forEach(
+      key => {
+        if (isNaN(this.user[key])) {
+          this.user[key] = Math.floor(Math.random() * Math.floor(3));
+        }
+      }
+    );
+    this.http.post('http://localhost:5000/predictValue', this.user)
+      .subscribe(
+        response => {
+          this.data[0].x = response['fpr'];
+          this.data[0].y = response['tpr'];
+          this.data[0].name = 'AUC = ' + Number(response['roc_auc']).toFixed(2);
+          this.accuracy = Number(response['accuracy']).toFixed(2);
+          this.rocAuc = Number(response['roc_auc']).toFixed(2);
+          this.showResult = true;
+          this.eligibilityStatus = response['prediction'][0] === 1;
         }, error => {
           console.error(error);
         }

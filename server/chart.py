@@ -46,14 +46,16 @@ class Chart:
         df_forward_mod = df_back_mod.fillna(method='ffill')
         # df_forward_mod.head(3)
 
-        # df_forward_mod.isna().sum()
+        df_forward_mod.isna().sum()
+
+        df_back_mod = df_back_mod.fillna(method='bfill')
+        # df_back_mod.head(3)
+
+        # df_back_mod.isna().sum()
 
         # df_back_mod.groupby(df_back_mod['Saving accounts'])['Saving accounts'].size()
 
         # df_forward_mod.groupby(df_forward_mod['Saving accounts'])['Saving accounts'].size()
-
-        df_back_mod = df_back_mod.fillna(method='bfill')
-        # df_back_mod.head(3)
 
         cols = ["Sex", "Housing", "Saving accounts",
                 "Checking account", "Purpose", "Risk"]
@@ -75,11 +77,17 @@ class Chart:
         feature_df = feature_df.sort_values(
             'rank', ascending=True).reset_index(drop=True)
 
+        # feature_df
+
         Ts = pd.DataFrame([df_back_mod['Age'], df_back_mod['Credit amount'], df_back_mod['Duration'],
                         df_back_mod['Saving accounts'], df_back_mod['Purpose'], df_back_mod['Checking account']]).T
 
+        # Ts.head(3)
+
         NTs = pd.DataFrame(
             [df_back_mod['Housing'], df_back_mod['Job'], df_back_mod['Sex']]).T
+
+        # NTs.head(3)
 
         self.Ts_new = Ts.copy()
 
@@ -105,27 +113,32 @@ class Chart:
         self.X_train_1, self.X_test_1, self.y_train_1, self.y_test_1 = train_test_split(
             Ts, self.y, test_size=0.3)
 
+        # self.X_test_1
+
         # And check if they splitted correctly
-        # print(len(X_train_1))
-        # print(len(X_test_1))
-        # print(len(y_train_1))
-        # print(len(y_test_1))
-        
-    def chart(self, pred_value):
+        # print(len(self.X_train_1))
+        # print(len(self.X_test_1))
+        # print(len(self.y_train_1))
+        # print(len(self.y_test_1))
+
+    def setChart(self):
 
         self.scaler = StandardScaler()
 
+        self.X_train_1_copy = self.X_train_1.copy()
         # We normalize train sample
         self.scaler.fit(self.X_train_1)
         self.X_train_1 = self.scaler.transform(self.X_train_1)
 
         # And test sample
         # scaler.fit(X_test_2)
-        data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount']]]
-        data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account'])
-        self.X_test_1 = self.scaler.transform(data_df)
+        # data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount'], pred_value['housing']]]
+        # data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account', 'Housing'])
+        # data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount']]]
+        # data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account'])
+        # self.X_test_3 = self.scaler.transform(data_df)
 
-        # X_train_1.shape
+        self.X_train_1.shape
 
         # Saving seed
         # divide_seed = np.random.randint(1, 100)
@@ -142,13 +155,13 @@ class Chart:
 
         self.scaler = StandardScaler()
 
-        # We normalize train sample
-        self.scaler.fit(self.X_train_2)
-        self.X_train_2 = self.scaler.transform(self.X_train_2)
+        # # We normalize train sample
+        # self.scaler.fit(self.X_train_2)
+        # self.X_train_2 = self.scaler.transform(self.X_train_2)
 
-        # And test sample
-        # scaler.fit(X_test_2)
-        self.X_test_2 = self.scaler.transform(self.X_test_2)
+        # # And test sample
+        # # scaler.fit(X_test_2)
+        # self.X_test_2 = self.scaler.transform(self.X_test_2)
 
         # X_train_2.shape
 
@@ -158,18 +171,18 @@ class Chart:
         self.clf.fit(self.X_train_2, self.y_train_2)
 
         self.y_pred_2 = self.clf.predict(self.X_test_2)
-        # print("Accuracy:", metrics.accuracy_score(self.y_test_2, self.y_pred_2))
+        print("Accuracy:", metrics.accuracy_score(self.y_test_2, self.y_pred_2))
         # print("matrix", confusion_matrix(self.y_test_2, self.y_pred_2))
         # print("auc", roc_auc_score(self.y_test_2, self.y_pred_2))
         # print("f1", f1_score(self.y_test_2, self.y_pred_2))
         # print("f2", fbeta_score(y_test, y_pred))
-
 
         # print('report', classification_report(self.y_test_2, self.y_pred_2))
 
         self.clf.fit(self.X_train_1, self.y_train_1)
 
         self.y_pred_1 = self.clf.predict(self.X_test_1)
+        # self.y_pred_3 = self.clf.predict(self.X_test_3)
         # print("Accuracy:", metrics.accuracy_score(self.y_pred_1, self.y_test_1))
         # print("matrix", confusion_matrix(self.y_test_1, self.y_pred_1))
         # print("auc", roc_auc_score(self.y_test_1, self.y_pred_1))
@@ -185,8 +198,105 @@ class Chart:
         self.preds = self.probs[:, 1]
         self.fpr, self.tpr, self.threshold = metrics.roc_curve(self.y_test_1, self.preds)
         self.roc_auc = metrics.auc(self.fpr, self.tpr)
-        js = json.dumps({'fpr': self.fpr.tolist(), 'tpr': self.tpr.tolist(), 'roc_auc': self.roc_auc})
+        js = json.dumps({'fpr': self.fpr.tolist(), 'tpr': self.tpr.tolist(), 'roc_auc': self.roc_auc, 'accuracy': metrics.accuracy_score(self.y_pred_1, self.y_test_1)})
         return(js)
+        
+        # method I: plt
+        # import matplotlib.pyplot as plt
+        # plt.title('Receiver Operating Characteristic')
+        # print(fpr)
+        # print(tpr)
+        # plt.plot(fpr, tpr, 'b', label = 'AUC = %0.2f' % roc_auc)
+        # plt.legend(loc = 'lower right')
+        # # plt.plot([0, 1], [0, 1],'r--')
+        # plt.xlim([0, 1])
+        # plt.ylim([0, 1])
+        # plt.ylabel('True Positive Rate')
+        # plt.xlabel('False Positive Rate')
+        # plt.show()
+
+    def predict(self, pred_value):
+
+        self.scaler = StandardScaler()
+
+        # We normalize train sample
+        self.scaler.fit(self.X_train_1)
+        self.X_train_1 = self.scaler.transform(self.X_train_1)
+
+        data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount']]]
+        data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account'])
+
+        # And test sample
+        # scaler.fit(X_test_2)
+        # data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount'], pred_value['housing']]]
+        # data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account', 'Housing'])
+        data = [[pred_value['age'], pred_value['creditAmount'], pred_value['duration'], pred_value['savingAccount'], pred_value['purpose'], pred_value['checkingAccount']]]
+        data_df = pd.DataFrame(data,columns=['Age', 'Credit amount', 'Duration', 'Saving accounts', 'Purpose', 'Checking account'])
+        self.X_test_3 = self.scaler.transform(data_df)
+
+        self.X_train_1.shape
+
+        # Saving seed
+        # divide_seed = np.random.randint(1, 100)
+
+        # And then split the data
+        self.X_train_2, self.X_test_2, self.y_train_2, self.y_test_2 = train_test_split(
+            self.Ts_new, self.y, test_size=0.3)
+
+        # # And check if they splitted correctly
+        # print(len(X_train_2))
+        # print(len(X_test_2))
+        # print(len(y_train_2))
+        # print(len(y_test_2))
+
+        self.scaler = StandardScaler()
+
+        # # We normalize train sample
+        # self.scaler.fit(self.X_train_2)
+        # self.X_train_2 = self.scaler.transform(self.X_train_2)
+
+        # # And test sample
+        # # scaler.fit(X_test_2)
+        # self.X_test_2 = self.scaler.transform(self.X_test_2)
+
+        # X_train_2.shape
+
+        self.clf = RandomForestClassifier(
+            random_state=13, class_weight="balanced", max_depth=10, n_estimators=150)
+
+        self.clf.fit(self.X_train_2, self.y_train_2)
+
+        self.y_pred_2 = self.clf.predict(self.X_test_2)
+        print("Accuracy:", metrics.accuracy_score(self.y_test_2, self.y_pred_2))
+        # print("matrix", confusion_matrix(self.y_test_2, self.y_pred_2))
+        # print("auc", roc_auc_score(self.y_test_2, self.y_pred_2))
+        # print("f1", f1_score(self.y_test_2, self.y_pred_2))
+        # print("f2", fbeta_score(y_test, y_pred))
+
+        # print('report', classification_report(self.y_test_2, self.y_pred_2))
+
+        self.clf.fit(self.X_train_1, self.y_train_1)
+
+        self.y_pred_1 = self.clf.predict(self.X_test_1)
+        self.y_pred_3 = self.clf.predict(self.X_test_3)
+        # print("Accuracy:", metrics.accuracy_score(self.y_pred_1, self.y_test_1))
+        # print("matrix", confusion_matrix(self.y_test_1, self.y_pred_1))
+        # print("auc", roc_auc_score(self.y_test_1, self.y_pred_1))
+        # print("f1", f1_score(self.y_test_1, self.y_pred_1))
+        # print("f2", fbeta_score(y_test, y_pred))
+
+
+        # print('report', classification_report(self.y_test_1, self.y_pred_1))
+
+        # import sklearn.metrics as metrics
+        # calculate the fpr and tpr for all thresholds of the classification
+        self.probs = self.clf.predict_proba(self.X_test_1)
+        self.preds = self.probs[:, 1]
+        self.fpr, self.tpr, self.threshold = metrics.roc_curve(self.y_test_1, self.preds)
+        self.roc_auc = metrics.auc(self.fpr, self.tpr)
+        js = json.dumps({'fpr': self.fpr.tolist(), 'tpr': self.tpr.tolist(), 'roc_auc': self.roc_auc, 'accuracy': metrics.accuracy_score(self.y_pred_1, self.y_test_1), 'prediction': self.y_pred_3.tolist()})
+        return(js)
+        
         # method I: plt
         # import matplotlib.pyplot as plt
         # plt.title('Receiver Operating Characteristic')

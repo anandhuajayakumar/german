@@ -1,6 +1,6 @@
-<div class="col-sm-12 px-5 pt-2">
-  <div class="d-flex justify-content-center">
-    <form class="d-flex flex-wrap justify-content-around">
+<div class="col-sm-12 px-5 pt-2 main-page">
+  <div class="d-flex flex-column">
+    <form class="d-flex flex-wrap justify-content-around border py-2">
       <div class="form-group col-sm-5">
         <label for="age">Age</label>
         <input type="number" [(ngModel)]="user.age" name="age" class="form-control" id="age" placeholder="Enter age"
@@ -65,13 +65,34 @@
           <option *ngFor="let risk of risks; let i = index" [value]="i">{{risk}}</option>
         </select>
       </div> -->
-      <div class="col-sm-11">
+      <div class="col-sm-11 pt-2 pb-3">
         <button [ngClass]="{'cursor-p': isFormValid(), 'cursor-d': !isFormValid()}"
           class="btn btn-sm btn-primary float-right" [disabled]="!isFormValid()" (click)="submit()">Submit</button>
       </div>
     </form>
+    <div class="col-sm-11" *ngIf="showResult">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Eligible</th>
+            <th>Accuracy</th>
+            <th>AUC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <b *ngIf="eligibilityStatus === true" class="text-success">Eligible</b>
+              <b *ngIf="eligibilityStatus === false" class="text-danger">Not Eligible</b>
+            </td>
+            <td>{{accuracy}}</td>
+            <td>{{rocAuc}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="col-sm-12 d-flex justify-content-center" *ngIf="data[0].x.length">
+        <plotly-plot [data]="data" [layout]="graph.layout"></plotly-plot>
+      </div>
+    </div>
   </div>
-</div>
-<div class="col-sm-12 d-flex justify-content-center" *ngIf="data[0].x.length">
-  <plotly-plot  [data]="data" [layout]="graph.layout"></plotly-plot>
 </div>

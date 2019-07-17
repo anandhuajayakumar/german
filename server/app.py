@@ -11,8 +11,14 @@ chart = Chart()
 def check():
     return "Flask app!"
 
-@app.route("/getChartValues", methods = ['POST'])
+@app.route("/getInitialChartValues", methods = ['POST'])
 def calculateChart():
-    js = chart.chart(pred_value = request.json)
+    js = chart.setChart()
+    resp = Response(js, status=200, mimetype='application/json')
+    return resp
+
+@app.route("/predictValue", methods = ['POST'])
+def calculateEligibility():
+    js = chart.predict(pred_value = request.json)
     resp = Response(js, status=200, mimetype='application/json')
     return resp

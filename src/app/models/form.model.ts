@@ -2,7 +2,7 @@ export class FormModel {
     age: number = null;
     // sex = null;
     // job: number = null;
-    // housing = null;
+    housing = null;
     savingAccount = null;
     checkingAccount = null;
     creditAmount: number = null;
